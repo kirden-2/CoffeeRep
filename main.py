@@ -1,17 +1,15 @@
 import sqlite3
 import sys
 
+from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem
 from PyQt6.QtWidgets import QMainWindow
 
-from addEditCoffeeForm import Ui_MainWindow_Second
-from mainUI import Ui_MainWindow
 
-
-class MyWidget(QMainWindow, Ui_MainWindow):
+class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
+        uic.loadUi('main.ui', self)
 
         self.updateButton.clicked.connect(self.show_table)
         self.addButton.clicked.connect(self.add_coffee_func)
@@ -19,7 +17,7 @@ class MyWidget(QMainWindow, Ui_MainWindow):
         self.show_table()
 
     def show_table(self):
-        con = sqlite3.connect('data/coffee.sqlite')
+        con = sqlite3.connect('coffee.sqlite')
         cur = con.cursor()
 
         result = cur.execute(f"""SELECT * FROM coffee""").fetchall()
@@ -54,10 +52,10 @@ class MyWidget(QMainWindow, Ui_MainWindow):
             self.statusBar().showMessage('Ничего не выбрано')
 
 
-class SecondWindow(QMainWindow, Ui_MainWindow_Second):
+class SecondWindow(QMainWindow):
     def __init__(self, parent=None, coffee_id=None):
         super().__init__(parent)
-        self.setupUi(self)
+        uic.loadUi('addEditCoffeeForm.ui', self)
 
         self.coffee_id = coffee_id
         if self.coffee_id is None:
@@ -91,7 +89,7 @@ class SecondWindow(QMainWindow, Ui_MainWindow_Second):
             self.statusBar().showMessage('Неверно заполнена форма')
 
     def add_coofe_secondWindow(self):
-        con = sqlite3.connect('data/coffee.sqlite')
+        con = sqlite3.connect('coffee.sqlite')
         cur = con.cursor()
         cur.execute('''INSERT INTO coffee (name,roast_level,type,taste,price,volume)
                         VALUES (?,?,?,?,?,?)''', (self.name.text(),
@@ -105,7 +103,7 @@ class SecondWindow(QMainWindow, Ui_MainWindow_Second):
         self.close()
 
     def edit_coofe_secondWindow(self):
-        con = sqlite3.connect('data/coffee.sqlite')
+        con = sqlite3.connect('coffee.sqlite')
         cur = con.cursor()
         cur.execute('''REPLACE INTO coffee
         (id, name,roast_level,type,taste,price,volume) VALUES (?,?,?,?,?,?,?)''',
